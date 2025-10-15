@@ -1,21 +1,5 @@
-import cv2
-import mediapipe as mp
-import numpy as np
-import pyautogui
-import pyttsx3
-import time
-import webbrowser
-import math
-import speech_recognition as sr
 import os
-import pickle
-import json
-import subprocess
-import pygetwindow as gw
-import requests
-import smtplib
-from email.mime.text import MimeText
-import threading
+import sys
 
 # ==================== DOCKER CONFIGURATION ====================
 print("🔍 Checking environment...")
@@ -48,37 +32,42 @@ else:
 print(f"📊 Database host: {DATABASE_CONFIG['host']}")
 # ==================== END DOCKER CONFIG ====================
 
-# ==================== DATABASE CONFIGURATION ====================
+import cv2
+import mediapipe as mp
+import numpy as np
+import pyautogui
+import pyttsx3
+import time
+import webbrowser
+import math
+import speech_recognition as sr
+import pickle
+import json
+import subprocess
+import pygetwindow as gw
+import requests
+import smtplib
+from email.mime.text import MimeText
+import threading
 import asyncpg
 from datetime import datetime, timedelta
-import json
 import uuid
 
-class DatabaseManager:
-    def __init__(self):
-        self.pool = None
-        self.redis_client = None
-        
-    async def initialize(self):
-        """Initialize database connections"""
-        try:
-            print(f"🔗 Connecting to database at {DATABASE_CONFIG['host']}...")
-            
-            # PostgreSQL connection - USING THE DOCKER CONFIG WE ADDED AT TOP
-            self.pool = await asyncpg.create_pool(
-                user=DATABASE_CONFIG['user'],
-                password=DATABASE_CONFIG['password'],
-                database=DATABASE_CONFIG['database'],
-                host=DATABASE_CONFIG['host'],
-                port=DATABASE_CONFIG['port']
-            )
-            
-            # Create tables if they don't exist
-            await self.create_tables()
-            print("✅ Database connected successfully!")
-            return True
-            
-        except Exception as e:
-            print(f"❌ Database connection failed: {e}")
-            print("⚠️  Running in offline mode without database")
-            return False
+# ==================== CONFIGURATION ====================
+MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
+TYPING_CONFIRM_TIME = 1.5
+MODE_SWITCH_TIME = 2.5
+CLICK_THRESHOLD = 40
+FEEDBACK_DURATION = 2
+MOUSE_MOVE_THRESHOLD = 50
+
+# ==================== ENTERPRISE SECTOR CONFIGURATION ====================
+DEMO_MODE = True
+CURRENT_SCENARIO = "Enterprise - Manufacturing Control & Productivity"
+ACCURACY_DISPLAY = "97%"
+LATENCY_DISPLAY = "65ms"
+DEMO_SECTOR = "enterprise"  
+INPUT_MODE = "quick_access"
+
+# Continue with the rest of your existing main.py code...
+# [PASTE ALL YOUR EXISTING CODE AFTER THIS LINE]
