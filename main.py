@@ -48,6 +48,37 @@ else:
 print(f"📊 Database host: {DATABASE_CONFIG['host']}")
 # ==================== END DOCKER CONFIG ====================
 
-# ==================== CONFIGURATION ====================
-MODEL_DIR = os.path.dirname(os.path.abspath(__file__))
-# ... rest of your existing code continues ...
+# ==================== DATABASE CONFIGURATION ====================
+import asyncpg
+from datetime import datetime, timedelta
+import json
+import uuid
+
+class DatabaseManager:
+    def __init__(self):
+        self.pool = None
+        self.redis_client = None
+        
+    async def initialize(self):
+        """Initialize database connections"""
+        try:
+            print(f"🔗 Connecting to database at {DATABASE_CONFIG['host']}...")
+            
+            # PostgreSQL connection - USING THE DOCKER CONFIG WE ADDED AT TOP
+            self.pool = await asyncpg.create_pool(
+                user=DATABASE_CONFIG['user'],
+                password=DATABASE_CONFIG['password'],
+                database=DATABASE_CONFIG['database'],
+                host=DATABASE_CONFIG['host'],
+                port=DATABASE_CONFIG['port']
+            )
+            
+            # Create tables if they don't exist
+            await self.create_tables()
+            print("✅ Database connected successfully!")
+            return True
+            
+        except Exception as e:
+            print(f"❌ Database connection failed: {e}")
+            print("⚠️  Running in offline mode without database")
+            return False
