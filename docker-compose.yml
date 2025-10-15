@@ -1,0 +1,42 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: signlink_db
+      POSTGRES_USER: signlink_user
+      POSTGRES_PASSWORD: secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U signlink_user -d signlink_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Main Application
+  signlink-app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://signlink_user:secure_password@postgres:5432/signlink_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - .:/app
+      - /tmp/.X11-unix:/tmp/.X11-unix  # For display
+    devices:
+      - /dev/video0:/dev/video0  # Camera access
+    privileged: true
+    stdin_open: true
+    tty: true
+
+volumes:
+  postgres_data:
